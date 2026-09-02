@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Happy Birthday</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ffe9b3, #ffd6e8, #c9e7ff);
+    background-size: 300% 300%;
+    animation: gradientShift 12s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .bgSymbol {
+    position: absolute;
+    bottom: -50px;
+    font-size: 22px;
+    opacity: 0.7;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    to { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+  }
+
+  .screen { text-align: center; z-index: 2; position: relative; }
+
+  .envelope {
+    width: 160px;
+    height: 110px;
+    background: #fff8f0;
+    border-radius: 10px;
+    margin: 0 auto 30px;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(150, 100, 50, 0.25);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .envelope:hover { transform: scale(1.06) translateY(-5px); }
+
+  .envelope::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 80px solid transparent;
+    border-right: 80px solid transparent;
+    border-top: 55px solid #ffd27a;
+    transform-origin: top;
+    transition: transform 0.5s ease;
+  }
+
+  .envelope.open::before { transform: rotateX(180deg); }
+
+  .envelope-icon {
+    position: absolute;
+    top: 60px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 26px;
+  }
+
+  #mailboxScreen h2 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 34px;
+    color: #6b4a2e;
+    margin-bottom: 8px;
+  }
+
+  #mailboxScreen p { color: #8a6a4a; font-size: 15px; }
+
+  #gameScreen { display: none; }
+
+  #gameScreen h2 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 32px;
+    color: #6b4a2e;
+    margin-bottom: 6px;
+  }
+
+  #gameScreen p { color: #8a6a4a; font-size: 14px; margin-bottom: 10px; }
+
+  #gameArea {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 0 auto;
+  }
+
+  .collectItem {
+    position: absolute;
+    font-size: 34px;
+    cursor: pointer;
+    animation: bob 1.6s ease-in-out infinite;
+    user-select: none;
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .counter {
+    font-size: 16px;
+    color: #6b4a2e;
+    font-weight: 500;
+    margin-top: 10px;
+  }
+
+  #rewardOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  #rewardOverlay .burst {
+    font-size: 30px;
+    transform: scale(0);
+    animation: bloom 1.4s ease forwards;
+  }
+
+  @keyframes bloom {
+    0% { transform: scale(0) rotate(0deg); opacity: 0; }
+    60% { transform: scale(1.3) rotate(180deg); opacity: 1; }
+    100% { transform: scale(1) rotate(360deg); font-size: 160px; opacity: 1; }
+  }
+
+  #birthdayScreen { display: none; max-width: 700px; padding: 20px; position: relative; z-index: 2; }
+
+  #blurredBackground {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: url("");
+    background-size: cover;
+    background-position: center;
+    filter: blur(6px) brightness(0.95);
+    transform: scale(1.1); /* avoids blurry edges showing at the border */
+    z-index: 0;
+  }
+
+  #birthdayScreen h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 54px;
+    color: #6b4a2e;
+    text-shadow: 0 2px 10px rgba(255,255,255,0.6);
+    margin-bottom: 14px;
+  }
+
+  #birthdayScreen .message {
+    color: #5a4230;
+    font-size: 15.5px;
+    margin-bottom: 26px;
+    line-height: 1.7;
+    text-align: left;
+  }
+
+  .photos { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-bottom: 22px; }
+
+  .photo-box {
+    width: 150px;
+    height: 190px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 10px 25px rgba(150,100,50,0.2);
+    overflow: hidden;
+    transform: rotate(-4deg);
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b98a55;
+    font-size: 13px;
+    background: repeating-linear-gradient(45deg, #fff6ea, #fff6ea 10px, #ffedd2 10px, #ffedd2 20px);
+  }
+
+  .photo-box:nth-child(2) { transform: rotate(2deg); }
+  .photo-box:nth-child(3) { transform: rotate(-2deg); }
+  .photo-box:hover { transform: rotate(0deg) scale(1.05); }
+  .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+
+  .signature {
+    font-family: 'Dancing Script', cursive;
+    font-size: 22px;
+    color: #6b4a2e;
+    margin-top: 10px;
+  }
+
+  .fade-in { animation: fadeIn 1.2s ease forwards; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div id="mailboxScreen" class="screen">
+  <div class="envelope" id="envelope" onclick="openMail()">
+    <div class="envelope-icon">✉️</div>
+  </div>
+  <h2>You've got a letter</h2>
+  <p>tap the envelope to open it</p>
+</div>
+
+<div id="gameScreen" class="screen">
+  <h2>Catch the fireworks!</h2>
+  <p>tap all of them to unlock your surprise</p>
+  <div id="gameArea"></div>
+  <div class="counter"><span id="count">0</span> / <span id="total">6</span> collected</div>
+</div>
+
+<div id="rewardOverlay">
+  <div class="burst">🎆</div>
+</div>
+
+<div id="birthdayScreen" class="screen">
+  <div id="blurredBackground"></div>
+  <div style="position: relative; z-index: 2; background: rgba(255,255,255,0.55); border-radius: 24px; padding: 30px;">
+    <h1 id="birthdayTitle">Happy Birthday!</h1>
+    <p class="message" id="birthdayMessage"></p>
+    <div class="photos">
+      <!-- Replace src="" with your own photo file paths, e.g. src="photo1.jpg" -->
+      <div class="photo-box"><img src="C:\Users\gizmoo\Downloads\photo1.jpg"></div>
+      <div class="photo-box"><img src="C:\Users\gizmoo\Downloads\photo2.jpg"></div>
+      <div class="photo-box"><img src="C:\Users\gizmoo\Downloads\photo3.jpg"></div>
+    </div>
+    <div class="signature" id="signature">— Your Name</div>
+  </div>
+</div>
+
+<script>
+  // ---------- EDIT THESE ----------
+  const herName = "Yulisha";       // her name
+  const yourName = "Anup";     // your name, shown as the signature
+
+  // Set her photo as a blurry background behind the birthday message
+  // Replace "" with the same photo filename you use below, e.g. "photo1.jpg"
+  document.getElementById("blurredBackground").style.backgroundImage = 'url("photo4.jpg")';
+
+
+  document.getElementById("birthdayTitle").textContent = "Happy Birthday, " + herName + "!";
+  document.getElementById("signature").textContent = "— " + yourName;
+
+  document.getElementById("birthdayMessage").innerHTML =
+    `Hey ${herName}!<br><br>` +
+    `Just wanted to wish you a happy birthday! It was fun being classmates these past two years in 11 and 12 — ` +
+    `hope your day is a good one, and have a great future ahead. 🎉`;
+
+  const bgSymbols = ["🎉", "🎈", "✨", "🎊"];
+  for (let i = 0; i < 25; i++) {
+    const symbol = document.createElement("div");
+    symbol.className = "bgSymbol";
+    symbol.textContent = bgSymbols[Math.floor(Math.random() * bgSymbols.length)];
+    symbol.style.left = Math.random() * 100 + "vw";
+    symbol.style.animationDuration = (8 + Math.random() * 8) + "s";
+    symbol.style.animationDelay = (Math.random() * 8) + "s";
+    document.body.appendChild(symbol);
+  }
+
+  function openMail() {
+    document.getElementById("envelope").classList.add("open");
+
+    setTimeout(() => {
+      document.getElementById("mailboxScreen").style.display = "none";
+      const gameScreen = document.getElementById("gameScreen");
+      gameScreen.style.display = "block";
+      gameScreen.classList.add("fade-in");
+      spawnItems();
+    }, 700);
+  }
+
+  let collected = 0;
+  const totalItems = 6;
+
+  function spawnItems() {
+    const gameArea = document.getElementById("gameArea");
+    for (let i = 0; i < totalItems; i++) {
+      const item = document.createElement("div");
+      item.className = "collectItem";
+      item.textContent = "🎆";
+      item.style.top = Math.random() * 260 + "px";
+      item.style.left = Math.random() * 260 + "px";
+      item.style.animationDelay = (Math.random() * 1.5) + "s";
+      item.onclick = function () {
+        item.remove();
+        collected++;
+        document.getElementById("count").textContent = collected;
+        if (collected >= totalItems) {
+          setTimeout(showReward, 300);
+        }
+      };
+      gameArea.appendChild(item);
+    }
+  }
+
+  function showReward() {
+    document.getElementById("gameScreen").style.display = "none";
+    const overlay = document.getElementById("rewardOverlay");
+    overlay.style.display = "flex";
+
+    if (typeof confetti === "function") {
+      confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+    }
+
+    setTimeout(() => {
+      overlay.style.display = "none";
+      const birthdayScreen = document.getElementById("birthdayScreen");
+      birthdayScreen.style.display = "block";
+      birthdayScreen.classList.add("fade-in");
+
+      if (typeof confetti === "function") {
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+      }
+    }, 1800);
+  }
+</script>
+
+</body>
+</html>
