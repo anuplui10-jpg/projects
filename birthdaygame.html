@@ -242,9 +242,9 @@
     <p class="message" id="birthdayMessage"></p>
     <div class="photos">
       <!-- Replace src="" with your own photo file paths, e.g. src="photo1.jpg" -->
-      <div class="photo-box"><img src="photo1.jpg"></div>
-      <div class="photo-box"><img src="photo2.jpg"></div>
-      <div class="photo-box"><img src="photo3.jpg"></div>
+      <div class="photo-box"><img src=""></div>
+      <div class="photo-box"><img src=""></div>
+      <div class="photo-box"><img src=""></div>
     </div>
     <div class="signature" id="signature">— Your Name</div>
   </div>
@@ -252,21 +252,21 @@
 
 <script>
   // ---------- EDIT THESE ----------
-  const herName = "Yulisha";       // her name
-  const yourName = "Anup";     // your name, shown as the signature
+  const personName = "";       // person name
+  const yourName = "";     // your name, shown as the signature
 
   // Set her photo as a blurry background behind the birthday message
   // Replace "" with the same photo filename you use below, e.g. "photo1.jpg"
-  document.getElementById("blurredBackground").style.backgroundImage = 'url("photo4.jpg")';
+  document.getElementById("blurredBackground").style.backgroundImage = 'url("")';
 
 
-  document.getElementById("birthdayTitle").textContent = "Happy Birthday, " + herName + "!";
+  document.getElementById("birthdayTitle").textContent = "Happy Birthday, " + personName + "!";
   document.getElementById("signature").textContent = "— " + yourName;
 
   document.getElementById("birthdayMessage").innerHTML =
-    `Hey ${herName}!<br><br>` +
-    `Just wanted to wish you a happy birthday! It was fun being classmates these past two years in 11 and 12 — ` +
-    `hope your day is a good one, and have a great future ahead. 🎉`;
+    `Hey ${personName}!<br><br>` +
+    `// write what you want ` +
+    `// write what you want 🎉`;
 
   const bgSymbols = ["🎉", "🎈", "✨", "🎊"];
   for (let i = 0; i < 25; i++) {
